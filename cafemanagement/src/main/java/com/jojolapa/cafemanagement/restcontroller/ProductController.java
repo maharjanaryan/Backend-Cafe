@@ -25,6 +25,7 @@ public class ProductController {
     public Product addProduct(@RequestParam("name") String name,
                               @RequestParam("price") Double price,
                               @RequestParam("description") String description,
+                              @RequestParam("category") String category, // Add category parameter
                               @RequestParam("image") MultipartFile image) throws IOException {
 
         // Create uploads directory if it doesn't exist
@@ -45,6 +46,7 @@ public class ProductController {
         p.setName(name);
         p.setPrice(price);
         p.setDescription(description);
+        p.setCategory(category); // Set category
         p.setImageUrl("http://localhost:8080/uploads/" + fileName);
 
         return repo.save(p);
@@ -53,6 +55,12 @@ public class ProductController {
     @GetMapping
     public List<Product> getAll() {
         return repo.findAll();
+    }
+
+    // Add endpoint to get products by category
+    @GetMapping("/category/{category}")
+    public List<Product> getProductsByCategory(@PathVariable String category) {
+        return repo.findByCategory(category);
     }
 
     // Add this endpoint to get a product by ID
@@ -67,6 +75,7 @@ public class ProductController {
                                  @RequestParam(value = "name", required = false) String name,
                                  @RequestParam(value = "price", required = false) Double price,
                                  @RequestParam(value = "description", required = false) String description,
+                                 @RequestParam(value = "category", required = false) String category, // Add category parameter
                                  @RequestParam(value = "image", required = false) MultipartFile image) throws IOException {
 
         Product existingProduct = repo.findById(id).orElse(null);
@@ -77,6 +86,7 @@ public class ProductController {
         if (name != null) existingProduct.setName(name);
         if (price != null) existingProduct.setPrice(price);
         if (description != null) existingProduct.setDescription(description);
+        if (category != null) existingProduct.setCategory(category); // Update category
 
         if (image != null && !image.isEmpty()) {
             // Create uploads directory if it doesn't exist
